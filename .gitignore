@@ -40,5 +40,7 @@ Thumbs.db
 
 /build
 
+/network-audit-results/
+
 .nx/cache
 .nx/workspace-data

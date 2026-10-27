@@ -75,6 +75,12 @@ TODO
 
 TODO
 
+## Runtime Network Inspection
+
+The [runtime network audit](docs/NetworkAudit.md) runs the production application
+in an isolated Linux CI desktop and publishes socket destination observations
+for review, following the inspection requested in issue #98.
+
 ## Reporting Issues
 
 Please use the [Issues](https://github.com/BrantaOps/core/issues) tab above to report an issue.
