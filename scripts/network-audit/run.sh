@@ -5,7 +5,7 @@ if [[ "$(uname -s)" != Linux || "${CI:-}" != true || "${GITHUB_ACTIONS:-}" != tr
   echo 'Run only on a disposable Linux GitHub Actions runner; not on a personal desktop.' >&2
   exit 1
 fi
-for tool in strace xvfb-run timeout node; do command -v "$tool" >/dev/null; done
+for tool in strace xvfb-run dbus-run-session timeout node; do command -v "$tool" >/dev/null; done
 output="$PWD/network-audit-results"
 mkdir -p "$output"
 scratch="$(mktemp -d)"
@@ -32,7 +32,7 @@ export XDG_CONFIG_HOME="$scratch/config" XDG_DATA_HOME="$scratch/data"
 export BRANTA_AUDIT_PROFILE="$scratch/profile" BRANTA_AUDIT_OUTPUT="$output"
 unset APP_DEV ELECTRON_RUN_AS_NODE
 set +e
-timeout --kill-after=10s 65s xvfb-run -a --server-args='-screen 0 1280x800x24 -nolisten tcp' \
+timeout --kill-after=10s 65s dbus-run-session -- xvfb-run -a --server-args='-screen 0 1280x800x24 -nolisten tcp' \
   strace -f -qq -s 0 -e trace=network -o "$output/trace.log" \
   node_modules/.bin/electron scripts/network-audit/electron.cjs headless \
   > "$output/application.log" 2>&1

@@ -6,6 +6,9 @@ if (process.platform !== 'linux' || process.env.CI !== 'true' || !process.env.BR
 const { app, clipboard } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
+// Match `electron .`: relative loadFile paths belong to the project, not the
+// directory containing this test entry point.
+app.setAppPath(path.resolve(__dirname, '../..'));
 app.setPath('userData', process.env.BRANTA_AUDIT_PROFILE);
 app.commandLine.appendSwitch('password-store', 'basic');
 let finished = false;
