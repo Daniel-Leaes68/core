@@ -27,8 +27,9 @@ Angular to render, puts the public Bitcoin genesis address into a fresh virtual
 clipboard, requires Branta's genesis-address label to appear, then observes for
 five more seconds. Existing user data is never copied. It does not create,
 connect to or use a real wallet. It does not follow external links or submit
-transactions. A fresh HOME and user-data directory also isolate autostart and
-storage writes. The wrapper refuses to run outside Linux GitHub Actions; do not
+transactions. Fresh XDG and Electron user-data directories isolate application
+storage; autostart writes remain on the disposable runner. HOME is not changed.
+The wrapper refuses to run outside Linux GitHub Actions; do not
 run the Electron harness in your personal desktop session.
 
 ## Capture validation

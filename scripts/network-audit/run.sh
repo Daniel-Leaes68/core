@@ -25,9 +25,10 @@ assert.ok(summarize(fs.readFileSync(`${dir}/control.log`, 'utf8')).some(d => d.a
 console.log('Observer control passed');
 NODE
 
-# Fresh HOME, Electron data and X server: no existing clipboard or wallet data.
-mkdir -p "$scratch/home" "$scratch/config" "$scratch/data" "$scratch/profile"
-export HOME="$scratch/home" XDG_CONFIG_HOME="$scratch/config" XDG_DATA_HOME="$scratch/data"
+# Fresh Electron data and X server on a disposable hosted runner: no existing
+# clipboard or wallet data. The caller's HOME is never changed.
+mkdir -p "$scratch/config" "$scratch/data" "$scratch/profile"
+export XDG_CONFIG_HOME="$scratch/config" XDG_DATA_HOME="$scratch/data"
 export BRANTA_AUDIT_PROFILE="$scratch/profile" BRANTA_AUDIT_OUTPUT="$output"
 unset APP_DEV ELECTRON_RUN_AS_NODE
 set +e

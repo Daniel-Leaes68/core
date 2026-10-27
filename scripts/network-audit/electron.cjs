@@ -21,7 +21,9 @@ app.on('browser-window-created', (_event, window) => {
     if (isMainFrame) fail(new Error(`Page load failed: ${code} ${description} ${url}`));
   });
   window.webContents.on('did-finish-load', async () => {
-    if (!window.webContents.getURL().endsWith('/dist/branta/browser/index.html')) return;
+    // Angular may already have replaced index.html with the /clipboard route.
+    // The splash page lives in resources/, outside the production bundle path.
+    if (!window.webContents.getURL().includes('/dist/branta/browser/')) return;
     try {
       // Loading a splash page is not enough: require the actual Angular UI.
       let bootstrapped = false;
