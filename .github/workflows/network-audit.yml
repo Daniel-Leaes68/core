@@ -18,9 +18,13 @@ jobs:
           cache: npm
       - name: Install runtime observation tools
         run: sudo apt-get update && sudo apt-get install -y strace xvfb xauth libgtk-3-0 libnss3 libasound2 libgbm1
-      - run: npm ci
+      # npm 10 rejects this repository's existing lockfile on Linux; use the
+      # same npm version validated for the clean install, without rewriting it.
+      - run: npx --yes npm@11.20.0 ci
       - name: Test report parser
         run: node --test scripts/network-audit/report.test.mjs
+      - name: Run existing unit tests before generating build output
+        run: npm test -- --runInBand
       - name: Build production application
         run: npm run build
       - name: Observe Branta and verify capture control
