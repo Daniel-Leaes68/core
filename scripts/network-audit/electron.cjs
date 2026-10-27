@@ -3,7 +3,7 @@
 if (process.platform !== 'linux' || process.env.CI !== 'true' || !process.env.BRANTA_AUDIT_PROFILE) {
   throw new Error('Requires Linux CI and an isolated audit profile (use run.sh).');
 }
-const { app, clipboard } = require('electron');
+const { app, clipboard, safeStorage } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 // Match `electron .`: relative loadFile paths belong to the project, not the
@@ -11,6 +11,9 @@ const path = require('node:path');
 app.setAppPath(path.resolve(__dirname, '../..'));
 app.setPath('userData', process.env.BRANTA_AUDIT_PROFILE);
 app.commandLine.appendSwitch('password-store', 'basic');
+// Hosted CI has no OS keyring. Enable Electron's documented basic_text fallback
+// only in this disposable test profile, which contains public fixture data.
+app.on('ready', () => safeStorage.setUsePlainTextEncryption(true));
 let finished = false;
 const fail = error => {
   console.error(error);
@@ -48,9 +51,17 @@ app.on('browser-window-created', (_event, window) => {
       }
       if (!recognized) throw new Error('Synthetic clipboard input was not rendered');
       console.log('SCENARIO: synthetic genesis-address clipboard input recognized');
+      const historyPersisted = await window.webContents.executeJavaScript(`
+        window.electron.retrieveData('history').then(items =>
+          items.some(item => item.value === '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'))
+      `);
+      if (!historyPersisted) throw new Error('Synthetic clipboard history did not persist');
+      console.log('SCENARIO: synthetic history persisted and read back');
       await delay(5000);
       fs.writeFileSync(path.join(process.env.BRANTA_AUDIT_OUTPUT, 'scenario.json'), JSON.stringify({
-        productionUiLoaded: true, syntheticClipboardRecognized: true, observationAfterInputMs: 5000,
+        productionUiLoaded: true, syntheticClipboardRecognized: true,
+        syntheticHistoryPersisted: true, storageBackend: safeStorage.getSelectedStorageBackend(),
+        observationAfterInputMs: 5000,
       }, null, 2));
       finished = true;
       app.exit(0);

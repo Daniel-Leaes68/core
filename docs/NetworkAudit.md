@@ -24,13 +24,20 @@ The script does not trace other runner processes. The X server uses Unix sockets
 
 The scenario boots the production UI from disk with an empty profile, waits for
 Angular to render, puts the public Bitcoin genesis address into a fresh virtual
-clipboard, requires Branta's genesis-address label to appear, then observes for
-five more seconds. Existing user data is never copied. It does not create,
+clipboard, requires Branta's genesis-address label to appear and its history to
+round-trip through storage, then observes for five more seconds. Existing user
+data is never copied. It does not create,
 connect to or use a real wallet. It does not follow external links or submit
 transactions. Fresh XDG and Electron user-data directories isolate application
 storage; autostart writes remain on the disposable runner. HOME is not changed.
 The wrapper refuses to run outside Linux GitHub Actions; do not
 run the Electron harness in your personal desktop session.
+
+Hosted CI has no system keyring. The harness selects Electron's documented
+`basic_text` storage fallback and explicitly enables it for the disposable
+profile containing only the public fixture. This does **not** change production
+storage settings and does not test OS-keyring encryption. `scenario.json`
+records the selected backend. Never use this test profile for private data.
 
 ## Capture validation
 
